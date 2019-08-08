@@ -10,7 +10,10 @@ long timestamp = cursor.getLong(4);
 String body = cursor.getString(5);
 */
 
+import java.io.File
+
 import android.os.Bundle
+import android.os.Environment
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu
@@ -43,8 +46,15 @@ class MainActivity : AppCompatActivity() {
                     }
                     text = text + "\n\n"
                 }
+                cursor.close()
                 val tv = findViewById<TextView>(R.id.middletext)
                 //tv.setText("Woo " + count + " there")
+                val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                val fileobj = File(dir, "FooFile")
+                fileobj.printWriter().use {out ->
+                    //out.println("hello world")
+                    out.println(text)
+                }
                 tv.setText(text)
             }
         }
