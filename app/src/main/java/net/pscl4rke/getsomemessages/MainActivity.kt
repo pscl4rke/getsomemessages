@@ -23,6 +23,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 import android.net.Uri
 import android.widget.TextView
+import android.widget.ProgressBar
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,30 +33,44 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { view ->
-            //var hello = "hell" + "o"
             var cursor = getContentResolver().query(Uri.parse("content://sms/inbox"), null, null, null, null)
             if (cursor != null) {
                 val count = cursor.count
                 Snackbar.make(view, "There are " + count + " messages", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show()
-                var text = "" + cursor.columnCount + "\n\n"
-                while (cursor.moveToNext()) {
-                    //text = text + cursor.getString(0) + " " + cursor.getString(1) + " " + cursor.getString(2) + " " + cursor.getString(3) + " " + cursor.getString(4) + " " + cursor.getString(5)
-                    for (x in 0 .. 33) {
-                        text = text + " " + cursor.getString(x)
-                    }
-                    text = text + "\n\n"
-                }
-                cursor.close()
                 val tv = findViewById<TextView>(R.id.middletext)
-                //tv.setText("Woo " + count + " there")
-                val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                val fileobj = File(dir, "FooFile")
-                fileobj.printWriter().use {out ->
-                    //out.println("hello world")
-                    out.println(text)
+                val pb = findViewById<ProgressBar>(R.id.progressBar)
+                var i = 0
+                var status = ""
+                var text = "" + cursor.columnCount + "\n\n"
+                val t = Thread() {
+                    while (cursor.moveToNext()) {
+                        status = "Message " + i + " of " + count
+                        i = i + 1
+                        //tv.setText(status)
+                        //tv.draw(getCanvas())
+                        //tv.text
+                        pb.max = count
+                        pb.progress = i
+                        //text = text + cursor.getString(0) + " " + cursor.getString(1) + " " + cursor.getString(2) + " " + cursor.getString(3) + " " + cursor.getString(4) + " " + cursor.getString(5)
+                        for (x in 0..33) {
+                            text = text + " " + cursor.getString(x)
+                        }
+                        text = text + "\n\n"
+                    }
+
+                    cursor.close()
+                    //tv.setText("Saving...")
+                    val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                    val fileobj = File(dir, "FooFile")
+                    fileobj.printWriter().use { out ->
+                        out.println(text)
+                    }
+                    runOnUiThread {
+                        tv.setText("Done")
+                    }
                 }
-                tv.setText(text)
+                t.start()
             }
         }
     }
