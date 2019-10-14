@@ -18,6 +18,7 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu
 import android.view.MenuItem
+import android.util.Log
 
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -31,8 +32,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+        Log.i("GetSomeMessages", "Main Activity Created")
 
         fab.setOnClickListener { view ->
+            Log.i("GetSomeMessages","The button has been clicked")
+            Log.i("GetSomeMessages", "Permissions must be good")
             var cursor = getContentResolver().query(Uri.parse("content://sms/inbox"), null, null, null, null)
             if (cursor != null) {
                 val count = cursor.count
@@ -75,6 +79,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // not using...
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
