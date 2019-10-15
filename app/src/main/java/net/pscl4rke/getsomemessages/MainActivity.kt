@@ -10,6 +10,7 @@ long timestamp = cursor.getLong(4);
 String body = cursor.getString(5);
 */
 
+import android.content.pm.PackageManager
 import java.io.File
 
 import android.os.Bundle
@@ -23,6 +24,7 @@ import android.util.Log
 import kotlinx.android.synthetic.main.activity_main.*
 
 import android.net.Uri
+import android.os.Build
 import android.widget.TextView
 import android.widget.ProgressBar
 
@@ -34,8 +36,11 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         Log.i("GetSomeMessages", "Main Activity Created")
 
-        fab.setOnClickListener { view ->
+        fab.setOnClickListener myClickHandler@ { view ->
             Log.i("GetSomeMessages","The button has been clicked")
+            if (!haveAllNecessaryPermissions()) {
+                return@myClickHandler
+            }
             Log.i("GetSomeMessages", "Permissions must be good")
             var cursor = getContentResolver().query(Uri.parse("content://sms/inbox"), null, null, null, null)
             if (cursor != null) {
@@ -75,6 +80,36 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 t.start()
+            }
+        }
+    }
+
+    fun haveAllNecessaryPermissions(): Boolean {
+        if (Build.VERSION.SDK_INT < 23) {
+            return true
+        }
+        if (this.checkSelfPermission(android.Manifest.permission.READ_SMS) == PackageManager.PERMISSION_DENIED) {
+            Log.i("GetSomeMessages", "READ_SMS permission is currently denied")
+            this.requestPermissions(arrayOf(android.Manifest.permission.READ_SMS), 1)
+            //MainActivity.requestPermissions(this, arrayOf(Manifest.permission.READ_SMS))
+            Log.i("GetSomeMessages", "Requested, and returning for now")
+            return false
+        }
+        if (this.checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+            Log.i("GetSomeMessages", "WRITE_EXTERNAL_STORAGE permission is currently denied")
+            this.requestPermissions(arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
+            Log.i("GetSomeMessages", "Requested, and returning for now")
+            return false
+        }
+        return  true
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        Log.i("GetSomeMessages", "The code " + requestCode + " came back")
+        when (requestCode) {
+            1 -> {
+            }
+            else -> {
             }
         }
     }
