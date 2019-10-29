@@ -42,7 +42,11 @@ class MainActivity : AppCompatActivity() {
                 return@myClickHandler
             }
             Log.i("GetSomeMessages", "Permissions must be good")
-            var cursor = getContentResolver().query(Uri.parse("content://sms/inbox"), null, null, null, null)
+            //var cursor = getContentResolver().query(Uri.parse("content://sms/inbox"), null, null, null, null)
+            //var cursor = getContentResolver().query(Uri.parse("content://sms/all"), null, null, null, null)
+            //var cursor = getContentResolver().query(Uri.parse("content://sms/outbox"), null, null, null, null)
+            //var cursor = getContentResolver().query(Uri.parse("content://sms/sent"), null, null, null, null)
+            var cursor = getContentResolver().query(Uri.parse("content://sms"), null, null, null, null)
             if (cursor != null) {
                 val count = cursor.count
                 Snackbar.make(view, "There are " + count + " messages", Snackbar.LENGTH_LONG)
