@@ -56,13 +56,13 @@ class MainActivity : AppCompatActivity() {
                 val pb = findViewById<ProgressBar>(R.id.progressBar)
                 pb.max = cursor.count
                 var i = 0
-                var status = ""
-                var text = "There are " + cursor.columnCount + " columns...\n\n"
+                val text = StringBuilder()
+                text.append("There are " + cursor.columnCount + " columns...\n\n")
                 for (colName in cursor.columnNames) {
-                    text = text + " " + colName
+                    text.append(" ")
+                    text.append(colName)
                 }
-                text = text + "\n\n"
-                //var text = """$text${cursor.columnNames}\n\n"""
+                text.append("\n\n")
                 val t = Thread() {
                     while (cursor.moveToNext()) {
                         i = i + 1
@@ -73,23 +73,22 @@ class MainActivity : AppCompatActivity() {
                         if (i % 20 == 0) {
                             pb.progress = i
                         }
-                        //text = text + cursor.getString(0) + " " + cursor.getString(1) + " " + cursor.getString(2) + " " + cursor.getString(3) + " " + cursor.getString(4) + " " + cursor.getString(5)
                         for (x in 0..(cursor.columnCount - 1)) {
-                            text = text + " " + cursor.getString(x)
+                            text.append(" ")
+                            text.append(cursor.getString(x))
                         }
-                        text = text + "\n\n"
+                        text.append("\n\n")
                     }
-
-                    cursor.close()
                     //tv.setText("Saving...")
                     val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                     val fileobj = File(dir, outputFileName())
                     fileobj.printWriter().use { out ->
-                        out.println(text)
+                        out.println(text.toString())
                     }
                     runOnUiThread {
                         tv.setText("Exported ${cursor.count} messages")
                     }
+                    cursor.close()
                 }
                 t.start()
             }
