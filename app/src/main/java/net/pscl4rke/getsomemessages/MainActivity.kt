@@ -49,10 +49,12 @@ class MainActivity : AppCompatActivity() {
             var cursor = getContentResolver().query(Uri.parse("content://sms"), null, null, null, null)
             if (cursor != null) {
                 val count = cursor.count
-                Snackbar.make(view, "There are " + count + " messages", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+                //Snackbar.make(view, "There are " + count + " messages", Snackbar.LENGTH_LONG)
+                //    .setAction("Action", null).show()
                 val tv = findViewById<TextView>(R.id.middletext)
+                tv.setText("There are ${cursor.count} messages")
                 val pb = findViewById<ProgressBar>(R.id.progressBar)
+                pb.max = cursor.count
                 var i = 0
                 var status = ""
                 var text = "There are " + cursor.columnCount + " columns...\n\n"
@@ -63,13 +65,14 @@ class MainActivity : AppCompatActivity() {
                 //var text = """$text${cursor.columnNames}\n\n"""
                 val t = Thread() {
                     while (cursor.moveToNext()) {
-                        status = "Message " + i + " of " + count
                         i = i + 1
+                        //status = "Message " + i + " of " + count
                         //tv.setText(status)
                         //tv.draw(getCanvas())
                         //tv.text
-                        pb.max = count
-                        pb.progress = i
+                        if (i % 20 == 0) {
+                            pb.progress = i
+                        }
                         //text = text + cursor.getString(0) + " " + cursor.getString(1) + " " + cursor.getString(2) + " " + cursor.getString(3) + " " + cursor.getString(4) + " " + cursor.getString(5)
                         for (x in 0..(cursor.columnCount - 1)) {
                             text = text + " " + cursor.getString(x)
@@ -85,7 +88,7 @@ class MainActivity : AppCompatActivity() {
                         out.println(text)
                     }
                     runOnUiThread {
-                        tv.setText("Done")
+                        tv.setText("Exported ${cursor.count} messages")
                     }
                 }
                 t.start()
