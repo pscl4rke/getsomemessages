@@ -55,7 +55,12 @@ class MainActivity : AppCompatActivity() {
                 val pb = findViewById<ProgressBar>(R.id.progressBar)
                 var i = 0
                 var status = ""
-                var text = "" + cursor.columnCount + "\n\n"
+                var text = "There are " + cursor.columnCount + " columns...\n\n"
+                for (colName in cursor.columnNames) {
+                    text = text + " " + colName
+                }
+                text = text + "\n\n"
+                //var text = """$text${cursor.columnNames}\n\n"""
                 val t = Thread() {
                     while (cursor.moveToNext()) {
                         status = "Message " + i + " of " + count
@@ -66,7 +71,7 @@ class MainActivity : AppCompatActivity() {
                         pb.max = count
                         pb.progress = i
                         //text = text + cursor.getString(0) + " " + cursor.getString(1) + " " + cursor.getString(2) + " " + cursor.getString(3) + " " + cursor.getString(4) + " " + cursor.getString(5)
-                        for (x in 0..33) {
+                        for (x in 0..(cursor.columnCount - 1)) {
                             text = text + " " + cursor.getString(x)
                         }
                         text = text + "\n\n"
