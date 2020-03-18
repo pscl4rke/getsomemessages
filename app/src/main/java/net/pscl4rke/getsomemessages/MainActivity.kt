@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity() {
                     cursor.close()
                     //tv.setText("Saving...")
                     val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                    val fileobj = File(dir, "FooFile")
+                    val fileobj = File(dir, outputFileName())
                     fileobj.printWriter().use { out ->
                         out.println(text)
                     }
@@ -91,6 +91,13 @@ class MainActivity : AppCompatActivity() {
                 t.start()
             }
         }
+    }
+
+    fun outputFileName(): String {
+        // I couuld add the date, which would stop it from overwriting each time, but would make
+        // it harder to automate the downloading of the right file...
+        //return "TextMessages.0000-00-00.000000.debug"
+        return "TextMessages.debug"
     }
 
     fun haveAllNecessaryPermissions(): Boolean {
