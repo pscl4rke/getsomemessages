@@ -27,6 +27,8 @@ import android.net.Uri
 import android.os.Build
 import android.widget.TextView
 import android.widget.ProgressBar
+import org.json.JSONArray
+import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
 
@@ -53,29 +55,28 @@ class MainActivity : AppCompatActivity() {
                 val pb = findViewById<ProgressBar>(R.id.progressBar)
                 pb.max = cursor.count
                 var i = 0
-                val text = StringBuilder()
-                text.append("There are " + cursor.columnCount + " columns...\n\n")
-                for (colName in cursor.columnNames) {
-                    text.append(" ")
-                    text.append(colName)
-                }
-                text.append("\n\n")
+                val meta = JSONObject()
+                val records = JSONArray()
+                meta.put("count", cursor.count)
                 val t = Thread() {
                     while (cursor.moveToNext()) {
                         i = i + 1
+                        val record = JSONObject()
                         if (i % 20 == 0) {
                             pb.progress = i
                         }
-                        for (x in 0..(cursor.columnCount - 1)) {
-                            text.append(" ")
-                            text.append(cursor.getString(x))
+                        for (columnIndex in 0..(cursor.columnCount - 1)) {
+                            record.put(cursor.getColumnName(columnIndex), cursor.getString(columnIndex))
                         }
-                        text.append("\n\n")
+                        records.put(record)
                     }
                     val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                     val fileobj = File(dir, outputFileName())
+                    val doc = JSONObject()
+                    doc.put("metadata", meta)
+                    doc.put("records", records)
                     fileobj.printWriter().use { out ->
-                        out.println(text.toString())
+                        out.println(doc.toString(4))
                     }
                     val count = cursor.count // ensure other thread below doesn't access after .close() called
                     runOnUiThread {
@@ -91,8 +92,8 @@ class MainActivity : AppCompatActivity() {
     fun outputFileName(): String {
         // I could add the date, which would stop it from overwriting each time, but would make
         // it harder to automate the downloading of the right file...
-        //return "TextMessages.0000-00-00.000000.debug"
-        return "TextMessages.debug"
+        //return "TextMessages.0000-00-00.000000.json"
+        return "TextMessages.json"
     }
 
     fun haveAllNecessaryPermissions(): Boolean {
