@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         Log.i("GetSomeMessages", "Main Activity Created")
 
-        fab.setOnClickListener myClickHandler@ { view ->
+        fab.setOnClickListener myClickHandler@ { _view ->
             Log.i("GetSomeMessages","The button has been clicked")
             if (!haveAllNecessaryPermissions()) {
                 return@myClickHandler
@@ -48,9 +48,6 @@ class MainActivity : AppCompatActivity() {
             //var cursor = getContentResolver().query(Uri.parse("content://sms/sent"), null, null, null, null)
             var cursor = getContentResolver().query(Uri.parse("content://sms"), null, null, null, null)
             if (cursor != null) {
-                val count = cursor.count
-                //Snackbar.make(view, "There are " + count + " messages", Snackbar.LENGTH_LONG)
-                //    .setAction("Action", null).show()
                 val tv = findViewById<TextView>(R.id.middletext)
                 tv.setText("There are ${cursor.count} messages")
                 val pb = findViewById<ProgressBar>(R.id.progressBar)
@@ -66,10 +63,6 @@ class MainActivity : AppCompatActivity() {
                 val t = Thread() {
                     while (cursor.moveToNext()) {
                         i = i + 1
-                        //status = "Message " + i + " of " + count
-                        //tv.setText(status)
-                        //tv.draw(getCanvas())
-                        //tv.text
                         if (i % 20 == 0) {
                             pb.progress = i
                         }
@@ -79,7 +72,6 @@ class MainActivity : AppCompatActivity() {
                         }
                         text.append("\n\n")
                     }
-                    //tv.setText("Saving...")
                     val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                     val fileobj = File(dir, outputFileName())
                     fileobj.printWriter().use { out ->
@@ -96,7 +88,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun outputFileName(): String {
-        // I couuld add the date, which would stop it from overwriting each time, but would make
+        // I could add the date, which would stop it from overwriting each time, but would make
         // it harder to automate the downloading of the right file...
         //return "TextMessages.0000-00-00.000000.debug"
         return "TextMessages.debug"
