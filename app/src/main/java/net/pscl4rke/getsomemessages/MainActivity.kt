@@ -77,8 +77,9 @@ class MainActivity : AppCompatActivity() {
                     fileobj.printWriter().use { out ->
                         out.println(text.toString())
                     }
+                    val count = cursor.count // ensure other thread below doesn't access after .close() called
                     runOnUiThread {
-                        tv.setText("Exported ${cursor.count} messages")
+                        tv.setText("Exported ${count} messages")
                     }
                     cursor.close()
                 }
